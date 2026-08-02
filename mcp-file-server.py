@@ -18,6 +18,18 @@ def _validate_path(rel_path: str) -> pathlib.Path:
 
 @mcp.tool()
 def list_items() -> list[dict]:
+    """ List the available files on the local 'desktop' directory.
+
+    Returns:
+        items: A list of the available files.
+
+        The returned list will have the following structure:
+        {
+            'name': 'file1.txt',
+            'is_dir': False
+        }
+    """
+
     items = []
     for p in BASE_DIR.iterdir():
         items.append({
@@ -29,4 +41,47 @@ def list_items() -> list[dict]:
 
 @mcp.tool()
 def create(path: str, is_dir: bool = False) -> str:
-    pass
+    """ Create a file / directory on the local 'desktop' directory.
+
+    Returns:
+        str: Confirmation of the created file / directory
+
+    Raises:
+        ValueError: When the path can't be resolved, probably by permissions.
+    """
+    target = _validate_path(path)
+    if is_dir:
+        target.mkdir(is_dir=True, exist_ok=True)
+        return f"Directory was created: {target}"
+    else:
+        target.parent.mkdir(is_dir=True, exists_ok=True)
+        target.touch(exist_ok=True)
+        return f"File was created: {target}"
+
+
+@mcp.tool()
+def append_to_file(path: str, content: str) -> str:
+    """ Add a content into a file.
+
+    Returns:
+        str: Confirmation message of the added content into the path.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        IsADirectoryError: If the specified path is a directory.
+    """
+    target = _validate_path(path)
+    if not target.exists():
+        raise FileNotFoundError(f"File {target} does not exist.")
+
+    if target.is_dir():
+        raise IsADirectoryError(f"Path {target} is a directory.")
+
+    with open(target, 'a', 'utf8') as f:
+        f.write(content)
+    return f"Content was added into the file {target}."
+
+
+if __name__ == "__main__":
+    # starts the mcp server
+    mcp.run()
