@@ -4,8 +4,8 @@ import sys
 from fastmcp import FastMCP
 
 mcp = FastMCP("DesktopFileSystem")
-current_directory = pathlib.Path(__file__).resolve().parent
-BASE_DIR = (current_directory / 'desktop').resolve()
+current_directory = pathlib.Path("/Users/mlazo")
+BASE_DIR = (current_directory / 'Desktop').resolve()
 print(f"root dir: {BASE_DIR}")
 
 
@@ -51,10 +51,10 @@ def create(path: str, is_dir: bool = False) -> str:
     """
     target = _validate_path(path)
     if is_dir:
-        target.mkdir(is_dir=True, exist_ok=True)
+        target.mkdir(parents=True, exist_ok=True)
         return f"Directory was created: {target}"
     else:
-        target.parent.mkdir(is_dir=True, exists_ok=True)
+        target.parent.mkdir(parents=True, exist_ok=True)
         target.touch(exist_ok=True)
         return f"File was created: {target}"
 
@@ -77,7 +77,7 @@ def append_to_file(path: str, content: str) -> str:
     if target.is_dir():
         raise IsADirectoryError(f"Path {target} is a directory.")
 
-    with open(target, 'a', 'utf8') as f:
+    with open(target, 'a', encoding='utf-8') as f:
         f.write(content)
     return f"Content was added into the file {target}."
 
