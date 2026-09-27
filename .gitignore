@@ -151,3 +151,6 @@ cython_debug/
 
 # Node
 node_modules/
+
+# Local notes
+notes.txt
