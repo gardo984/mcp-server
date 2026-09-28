@@ -1,7 +1,7 @@
 {
   "scripts": {
     "inspect": "mcp-inspector",
-    "hello-server": "fastmcp run src/hello_server/server.py --transport http --host 0.0.0.0 --port 8000 --reload"
+    "penguin-server": "fastmcp run src/penguin_server/server.py --transport http --host 0.0.0.0 --port 8000 --reload"
   },
   "dependencies": {
     "@modelcontextprotocol/inspector": "^2.8.0"

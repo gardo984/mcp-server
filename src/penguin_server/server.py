@@ -3,15 +3,12 @@ from mcp.server.fastmcp import FastMCP, Context
 from mcp.server.fastmcp.resources import Resource
 from mcp.server.fastmcp.prompts import Prompt
 from typing import Literal, Annotated, Dict, List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 mcp = FastMCP(
-    name="Hello MCP",
-    instructions=(
-        "My first MCP server - Hello World with tools, "
-        "resources and prompts"
-    )
+    name="Penguin MCP",
+    instructions="Provide tools, resources and prompts for integrations.",
 )
 
 # schemas
@@ -21,7 +18,46 @@ class SearchParams(BaseModel):
     query: str
     max_results: int = 5
 
+
+class SearchRequest(BaseModel):
+    query: str = Field(
+        ...,
+        description="Search Query",
+    )
+    filters: dict = Field(
+        default_factory=dict,
+        description="Additional Filters",
+    )
+    max_results: int = Field(10, ge=1, le=50,)
+    include_sources: bool = True
+
 # tools
+
+
+@mcp.tool()
+async def advanced_search(
+    request: SearchRequest
+) -> List[Dict]:
+    """Perform advanced semantic search with filtering."""
+    return [{"ok": True, }]
+
+
+@mcp.tool()
+async def analyze_sentiment(
+    text: str,
+    mode: Literal["positive", "negative", "detailed"] = "detailed"
+) -> Dict:
+    """ Analyze the sentiment of provided text.
+
+    Args:
+     text: The text to analyze
+     mode: Analysis depth level
+    """
+    return dict(
+        sentiment="positive",
+        score=0.87,
+        key_phrases=["excellent", "highly recommended",],
+    )
 
 
 @mcp.tool()
