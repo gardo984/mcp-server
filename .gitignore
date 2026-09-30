@@ -56,6 +56,9 @@ cover/
 
 # Django stuff:
 *.log
+# ...except changelogs, which are versioned and must be pushed.
+!**/changelogs/
+!**/changelogs/**
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -152,5 +155,25 @@ cython_debug/
 # Node
 node_modules/
 
+# Go
+#   Binaries and test artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+#   Build output (keep cmd/ and internal/, ignore compiled results)
+bin/
+
+#   Per-project toolchain overrides
+#   (commit .tool-versions / .mise.toml to pin the Go version; ignore local overrides)
+.go-version
+
 # Local notes
 notes.txt
+
+# Local symlink to the framework's .github checkout (see FRAMEWORK_ROOT)
+src/devops_server/docs

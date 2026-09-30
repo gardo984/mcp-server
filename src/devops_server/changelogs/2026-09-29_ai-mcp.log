@@ -1,0 +1,52 @@
+# Changelog
+
+## [0.1.0] — initial skeleton
+
+Initial MCP server built on `github.com/modelcontextprotocol/go-sdk` v1.8.0
+(Go 1.25).
+
+### Added
+
+- **Entrypoint** (`cmd/server/main.go`): loads config, wires the server, handles
+  SIGINT/SIGTERM, logs to stderr only.
+- **Config** (`internal/config`): env-driven, validated. `MCP_TRANSPORT`
+  (`stdio` default, `http`), `MCP_ADDR` (`:8000`), `FRAMEWORK_ROOT` (`.`),
+  `LOG_LEVEL` (`info`, mapped to slog).
+- **Server assembly** (`internal/mcpserver`): registers tools/resources, owns
+  transport lifecycle. `RunStdio` (stdio) and `RunHTTP` (streamable HTTP with
+  graceful shutdown).
+- **Tool** (`internal/tools`): `hello_world` with typed in/out structs, so the
+  SDK derives the JSON input/output schemas. Used as a connectivity test.
+- **Framework resources** (`internal/resources`): every artifact under
+  `agents/`/`prompts/`/`skills/` is published as `framework://{kind}/{name}`
+  (listed at startup), plus a `framework://{kind}/{name}` resource template so
+  files added later are readable without a restart.
+- **Framework loader** (`internal/framework`): MCP-agnostic scanning and reading,
+  extension-tolerant (`name`, `name.md`, `.markdown`, `.txt`), skips dotfiles,
+  rejects unknown kinds and path traversal. No SDK dependency, so it is reusable
+  and unit-testable on its own.
+- **Smoke test** (`internal/mcpserver/smoke_test.go`): in-memory transport that
+  lists tools/resources, calls `hello_world` and reads a resource.
+- **Tooling**: `Makefile` (`build`, `run`, `run-http`, `tidy`, `fmt`, `vet`,
+  `test`, `clean`), `.mise.toml` (pins Go 1.25, loads `.env`), `.env.example`.
+- **Docs**: `README.md` (setup, run, MCP Inspector usage).
+
+### Notes for porting to another Go repo
+
+The package is a self-contained module root, but the module path is
+`github.com/gardo984/mcp-server/src/devops_server` and every internal import
+uses it in full.
+
+1. Copy `src/devops_server/` contents into the target repo (drop `.gitkeep`s,
+   keep `Makefile`/`.mise.toml`/`.env.example`).
+2. Update `module` in `go.mod` and rewrite the internal import prefixes
+   (`grep -rl 'github.com/gardo984/mcp-server/src/devops_server' .`).
+3. Run `make tidy && make test`.
+
+### Extension points
+
+- New tools: add a file in `internal/tools`, define in/out structs, call
+  `mcp.AddTool`, then register from `Register`.
+- New resources: extend `framework.Kinds` (loader + resource registration both
+  read it) or add a new registrar called from `mcpserver.New`.
+- New transports/options: `mcpserver.New` takes the resolved `config.Config`.

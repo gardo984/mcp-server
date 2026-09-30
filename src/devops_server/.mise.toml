@@ -1,0 +1,8 @@
+# Pins the Go toolchain for this project only, so the global Go install is
+# left untouched. `cd` into this directory (or below) and mise activates it.
+[tools]
+go = "1.25"
+
+[env]
+# Load local overrides (FRAMEWORK_ROOT, MCP_ADDR, ...) from a git-ignored .env.
+_.file = ".env"
