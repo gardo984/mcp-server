@@ -79,3 +79,21 @@ home directory). It must point at a directory containing `agents/` (or
 skills from `<name>/SKILL.md` directories under `skills/` (or `.github/skills/`),
 and memories from `memories/` (or `.github/memories/`), including any hub's
 `*/skills/` and `*/memories/`. The `memories/` directory is optional.
+
+The framework root looks like this (each directory maps to one resource
+`framework://<kind>/{name}`):
+
+```text
+docs/                          # mounted directory having the AI framework (from git repo, storage, sftp, etc)
+├── agents/                    # framework://agents/{name}
+│   ├── backend-sre.agent.md
+│   ├── frontend-expert.agent.md
+│   ├── qa-expert.agent.md
+│   └── router.agent.md
+├── prompts/                   # framework://prompts/{name}
+├── skills/                    # framework://skills/{name}
+│   ├── commit-changes.prompt.md
+│   ├── pull-changes.prompt.md
+│   └── refresh-repo.prompt.md
+└── memories/                  # framework://memories/{name}   (optional)
+```
